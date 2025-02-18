@@ -1,0 +1,58 @@
+{{define "drivers"}}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pilotes F1</title>
+    <link rel="stylesheet" href="/static/css/drivers.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Pilotes de Formule 1</h1>
+      <select id="yearSelect">
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+        <option value="2021">2021</option>
+        <option value="2020">2020</option>
+        <option value="2010">2010</option>
+      </select>
+      <button onclick="fetchDrivers()">Afficher</button>
+    </header>
+
+    <div id="driversContainer" class="cards-container"></div>
+
+    <script>
+      function fetchDrivers() {
+        let year = document.getElementById("yearSelect").value;
+        fetch(`/api/drivers?year=${year}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("✅ Données reçues:", data);
+            let container = document.getElementById("driversContainer");
+            container.innerHTML = "";
+
+            if (data.length === 0) {
+              container.innerHTML =
+                "<p>Aucun pilote trouvé pour cette année.</p>";
+              return;
+            }
+
+            data.forEach((driver) => {
+              let card = `
+                <div class="driver-card">
+                  <h2>${driver.FirstName} ${driver.LastName}</h2>
+                  <p>Nationalité: ${driver.Nationality}</p>
+                  <img src="${driver.ImageURL}" alt="Photo de ${driver.FirstName} ${driver.LastName}" class="driver-image">
+                </div>
+              `;
+              container.innerHTML += card;
+            });
+          })
+          .catch((error) => console.error("❌ Erreur:", error));
+      }
+    </script>
+  </body>
+</html>
+{{end}}
